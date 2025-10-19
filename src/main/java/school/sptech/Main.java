@@ -41,8 +41,8 @@ public class Main {
                 System.out.println("-----------------------------------------");
 
                 try {
-                    String sql = "INSERT INTO rede (nome_interface, megabytes_recebidos, momento_registro) VALUES (?, ?, NOW())";
-                    template.update(sql, maiorInterface.getNome(), bytesRecebidosMB);
+                    String sql = "INSERT INTO captura (fkAtmComponente, valor, horario) VALUES (5, ?, NOW())";
+                    template.update(sql, bytesRecebidosMB);
 
                     System.out.println("✅ Dados inseridos no banco com sucesso!");
                 } catch (Exception e) {
