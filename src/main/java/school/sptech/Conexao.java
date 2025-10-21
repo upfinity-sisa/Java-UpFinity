@@ -8,8 +8,8 @@ public class Conexao {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
         dataSource.setUrl("jdbc:mysql://3.212.222.224:3306/upfinity?useSSL=false&serverTimezone=UTC");
-        dataSource.setUsername("root");
-        dataSource.setPassword("1234"); // ajuste conforme seu MySQL
+        dataSource.setUsername("funcUpFinity");
+        dataSource.setPassword("Upfinity123"); // ajuste conforme seu MySQL
         return dataSource;
     }
 }
