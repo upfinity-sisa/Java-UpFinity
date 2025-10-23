@@ -41,7 +41,7 @@ public class Main {
                 System.out.println("-----------------------------------------");
 
                 try {
-                    String sql = "INSERT INTO Captura (fkAtmComponente, valor, horario) VALUES (5, ?, NOW())";
+                    String sql = "INSERT INTO Captura (fkComponente, fkAtm, valor, horario) VALUES (4, 1, ?, NOW())";
                     template.update(sql, bytesRecebidosMB);
 
                     System.out.println("✅ Dados inseridos no banco com sucesso!");
