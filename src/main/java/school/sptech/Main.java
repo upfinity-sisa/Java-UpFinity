@@ -98,7 +98,7 @@ public class Main {
             System.out.println("✅ Componente de Rede já cadastrado para este ATM.");
 
         } catch (EmptyResultDataAccessException e) {
-            // --- NOVA LÓGICA DE CADASTRO AUTOMÁTICO ---
+
 
             System.out.println("⚠️ Componente de Rede não encontrado para o ATM. Iniciando cadastro automático...");
 
@@ -124,7 +124,7 @@ public class Main {
                 // Erro na tentativa de INSERT ou no SELECT seguinte
                 System.err.println("ERRO CRÍTICO ao cadastrar o Componente: " + cadastroE.getMessage());
                 System.err.println("O programa será encerrado.");
-                return; // Encerra o programa em caso de falha no cadastro
+                return;
             }
 
         } catch (Exception e) {
