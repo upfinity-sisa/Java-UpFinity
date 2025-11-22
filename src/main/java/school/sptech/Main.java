@@ -139,11 +139,12 @@ public class Main {
         ));
         // --- Fim do Bloco 3 ---
 
-        // --- Bloco 4 - Loop de Captura ---
+        // --- Bloco 4 - Loop de Captura (Inserção em CapturaRede e Captura) ---
         while (true) {
             RedeInterface maiorInterface = null;
             long maiorBytes = 0;
 
+            // Recarrega os dados das interfaces a CADA loop
             List<RedeInterface> interfacesAtualizadas = looca.getRede().getGrupoDeInterfaces().getInterfaces();
 
             for (RedeInterface iface : interfacesAtualizadas) {
@@ -155,25 +156,63 @@ public class Main {
             }
 
             if (maiorInterface != null) {
-                double bytesRecebidosMB = maiorInterface.getBytesRecebidos() / (1024.0 * 1024.0);
+                // 1. MB Recebidos (Métrica comum e Valor principal)
+                double mbRecebidos = maiorInterface.getBytesRecebidos() / (1024.0 * 1024.0);
 
-                System.out.println("Interface com mais bytes recebidos:");
-                System.out.println("Nome: " + maiorInterface.getNome());
-                System.out.printf("MegaBytes Recebidos: %.2f %n", bytesRecebidosMB);
-                System.out.println("-----------------------------------------");
+                // 2. Pacotes Recebidos (INT)
+                long pacotesRecebidos = maiorInterface.getPacotesRecebidos().longValue();
 
+                // 3. Pacotes Enviados (INT)
+                long pacotesEnviados = maiorInterface.getPacotesEnviados().longValue();
+
+                String nomeRede = maiorInterface.getNome();
+
+                System.out.println("--- Captura de Rede ---");
+                System.out.println("Interface: " + nomeRede);
+                System.out.printf("MB Recebidos: %.2f%n", mbRecebidos);
+                System.out.printf("Pacotes Recebidos: %d%n", pacotesRecebidos);
+                System.out.printf("Pacotes Enviados: %d%n", pacotesEnviados);
+                System.out.println("-----------------------");
+
+
+                // === INSERT 1: Tabela CapturaRede (Dados detalhados) ===
                 try {
-                    // O INSERT agora usa as duas FKs dinâmicas
-                    String sql = "INSERT INTO Captura (fkComponente, fkAtm, valor, horario) VALUES (?, ?, ?, NOW())";
-                    template.update(sql, idComponenteEncontrado, idAtm, bytesRecebidosMB);
+                    String sqlCapturaRede = "INSERT INTO CapturaRede (fkComponente, fkAtm, nomeRede, MBRecebidos, pacotesRecebidos, pacotesEnviados, horario) VALUES (?, ?, ?, ?, ?, ?, NOW())";
 
-                    System.out.println("✅ Dados inseridos no banco com sucesso!");
+                    template.update(
+                            sqlCapturaRede,
+                            idComponenteEncontrado,
+                            idAtm,
+                            nomeRede,
+                            mbRecebidos,
+                            pacotesRecebidos,
+                            pacotesEnviados
+                    );
+
+                    System.out.println("✅ Dados detalhados inseridos em CapturaRede.");
                 } catch (Exception e) {
-                    System.err.println("Erro ao inserir no banco: " + e.getMessage());
+                    System.err.println("❌ Erro ao inserir dados em CapturaRede: " + e.getMessage());
+                }
+
+                // === INSERT 2: Tabela Captura (Dados genéricos/Resumo) ===
+                try {
+                    // Inserimos o MB recebido como valor principal na tabela Captura
+                    String sqlCaptura = "INSERT INTO Captura (fkComponente, fkAtm, valor, horario) VALUES (?, ?, ?, NOW())";
+
+                    template.update(
+                            sqlCaptura,
+                            idComponenteEncontrado,
+                            idAtm,
+                            mbRecebidos // Valor principal para a tabela genérica
+                    );
+
+                    System.out.println("✅ Dados genéricos inseridos em Captura.");
+                } catch (Exception e) {
+                    System.err.println("❌ Erro ao inserir dados em Captura: " + e.getMessage());
                 }
 
             } else {
-                System.out.println("Nenhuma interface encontrada.");
+                System.out.println("Nenhuma interface de rede significativa encontrada.");
             }
 
             try {
@@ -183,5 +222,6 @@ public class Main {
                 break;
             }
         }
+        // --- Fim do Bloco 4 ---
     }
 }
