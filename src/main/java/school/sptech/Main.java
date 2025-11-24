@@ -156,8 +156,11 @@ public class Main {
             }
 
             if (maiorInterface != null) {
-                // 1. MB Recebidos (Métrica comum e Valor principal)
+                // 1. MB Recebidos
                 double mbRecebidos = maiorInterface.getBytesRecebidos() / (1024.0 * 1024.0);
+
+                // 2.MB Enviados
+                double mbEnviados = maiorInterface.getBytesEnviados() / (1024.0 * 1024.0);
 
                 // 2. Pacotes Recebidos (INT)
                 long pacotesRecebidos = maiorInterface.getPacotesRecebidos().longValue();
@@ -170,6 +173,7 @@ public class Main {
                 System.out.println("--- Captura de Rede ---");
                 System.out.println("Interface: " + nomeRede);
                 System.out.printf("MB Recebidos: %.2f%n", mbRecebidos);
+                System.out.printf("MB Enviados: %.2f%n", mbEnviados);
                 System.out.printf("Pacotes Recebidos: %d%n", pacotesRecebidos);
                 System.out.printf("Pacotes Enviados: %d%n", pacotesEnviados);
                 System.out.println("-----------------------");
@@ -177,7 +181,7 @@ public class Main {
 
                 // === INSERT 1: Tabela CapturaRede (Dados detalhados) ===
                 try {
-                    String sqlCapturaRede = "INSERT INTO CapturaRede (fkComponente, fkAtm, nomeRede, MBRecebidos, pacotesRecebidos, pacotesEnviados, horario) VALUES (?, ?, ?, ?, ?, ?, NOW())";
+                    String sqlCapturaRede = "INSERT INTO CapturaRede (fkComponente, fkAtm, nomeRede, MBRecebidos, MBEnviados, pacotesRecebidos, pacotesEnviados, horario) VALUES (?, ?, ?, ?, ?, ?, ?, NOW())";
 
                     template.update(
                             sqlCapturaRede,
@@ -185,6 +189,7 @@ public class Main {
                             idAtm,
                             nomeRede,
                             mbRecebidos,
+                            mbEnviados,
                             pacotesRecebidos,
                             pacotesEnviados
                     );
