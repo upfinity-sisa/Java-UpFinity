@@ -104,7 +104,7 @@ public class Main {
 
             try {
                 // 1. INSERT para criar o Componente
-                String sqlInsert = "INSERT INTO Componente (fkAtm, fkTipoComponente) VALUES (?, ?)";
+                String sqlInsert = "INSERT INTO Componente (IdComponente, fkAtm, fkTipoComponente) VALUES (4, ?, ?)";
                 template.update(sqlInsert, idAtm, idTipoComponenteRede);
 
                 System.out.println("✅ Componente de Rede cadastrado com sucesso!");
