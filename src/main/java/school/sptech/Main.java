@@ -1,15 +1,15 @@
 package school.sptech;
 
 import java.util.List;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.io.IOException; // Usado para tratar erros de rede/IO
-import com.github.britooo.looca.api.group.rede.Rede;
 import com.github.britooo.looca.api.group.rede.RedeInterface;
-import com.github.britooo.looca.api.group.rede.RedeInterfaceGroup;
 import com.github.britooo.looca.api.core.Looca;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.dao.EmptyResultDataAccessException;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.HttpURLConnection;
 
 public class Main {
 
@@ -19,34 +19,24 @@ public class Main {
         JdbcTemplate template = new JdbcTemplate(conexao.getConexao());
         Looca looca = new Looca();
 
-        // --- Bloco 1 - Identificar o IP local do ATM ---
         String ipAtm = null;
+
         try {
-            Rede rede = looca.getRede();
-            RedeInterfaceGroup grupoInterfaces = rede.getGrupoDeInterfaces();
-            List<RedeInterface> interfaces = grupoInterfaces.getInterfaces();
+            System.setProperty("java.net.preferIPv4Stack", "true");
 
-            for (RedeInterface iface : interfaces) {
+            URL url = new URL("http://checkip.amazonaws.com");
 
-                List<String> enderecosIpv4 = iface.getEnderecoIpv4();
-                if (enderecosIpv4.isEmpty()) {
-                    continue;
-                }
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("User-Agent", "Mozilla/5.0");
+            connection.setConnectTimeout(5000);
 
-                for (String ip : enderecosIpv4) {
-                    InetAddress addr = InetAddress.getByName(ip);
-                    if (addr.isSiteLocalAddress()) {
-                        ipAtm = ip;
-                        break;
-                    }
-                }
-                if (ipAtm != null) {
-                    break;
-                }
-            }
-        } catch (IOException e) {
-            System.err.println("Erro ao obter o IP da máquina: " + e.getMessage());
-            return;
+            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            ipAtm = reader.readLine().trim();
+            reader.close();
+
+        } catch (Exception e) {
+            System.err.println("Erro ao obter o IP Público: " + e.getMessage());
         }
 
         if (ipAtm == null) {
@@ -54,7 +44,7 @@ public class Main {
             return;
         }
 
-        System.out.println("✅ IP do ATM identificado: " + ipAtm);
+        System.out.println("✅ IP Público do ATM identificado: " + ipAtm);
         // --- Fim do Bloco 1 ---
 
         // --- Bloco 2 - Buscar o idAtm usando o IP ---
